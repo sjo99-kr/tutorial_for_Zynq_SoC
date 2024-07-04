@@ -55,6 +55,7 @@ module Bram_read_write(
     else begin
       // start writing
       if(counter_reg == (clk_freq -1)) begin
+        // first is to write data in to BRAM
         system_state_reg <= WR;
         state_timeout_reg <= 0;
       end
@@ -80,6 +81,7 @@ module Bram_read_write(
       end
     end
   end
+         
 
   // What data do you wanna write?
   always@(posedge clk or negedge rst)begin
@@ -109,9 +111,20 @@ module Bram_read_write(
         write_en_reg <= 0;
         read_en_reg <= 0;
       end
-      end
     end
   end
+
+         blk_mem_gen_0 block_Ram(
+           .clka(clk),
+           .ena(1),
+           .wea(write_en_reg),
+           .addra(write_addr_reg),
+           .dina(write_data),
+           .clkb(clk),
+           .enb(read_en_reg),
+           .addrb(read_addr_reg),
+           .doutb(read_data)
+         );
   
 
 
