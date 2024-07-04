@@ -3,15 +3,20 @@ module Bram_read_write(
   input clk,
   input rst
 );
-  // Using FSM
-  parameter IDLE = d'0;
-  parameter WR = d'1;
-  parameter RD = d'2;
-  parameter clk_freq = 50_000_000;
-  parameter bram_size = 2048;
-
-  reg [31:0] counter_reg;
-  // using system-verilog
+  // Using FSM 
+  parameter IDLE = 2'b000; 
+  parameter WR = 2'b0011;
+  parameter RD = 2'b010;
+  
+  // setting for test
+  parameter set_clk = 100; // Setting clock what you want
+  parameter bram_size = 50; // setting for 2024, but for example do 50
+  
+  // enable flag , counter for example
+  reg en; // enable to BRAM
+  reg [31:0] counter; // counter for Write or Read flag
+  
+  // using system-verilog when porting FPGA
   (*mark_debug="true"*) reg[3:0] system_state_reg;
   reg [31:0] state_timeout_reg;
   (*mark_debug="true"*) reg[15:0] write_data_reg;
@@ -20,14 +25,15 @@ module Bram_read_write(
 
   (*mark_debug="true"*) wire [15:0] read_data;
   (*mark_debug="true"*) wire [15:0] write_data;
-  (*mark_debug="true"*) reg read_en_rng;
+  (*mark_debug="true"*) reg read_en_reg;
   (*mark_debug="true"*) reg write_en_reg;
 
   wire [3:0] system_state;
   (*mark_debug="true"*) wire is_write_read_flag;
+  
   assign system_state = system_state_reg;
   assign write_data[15:0] = write_data_reg[15:0];
-  assign is_write_read_flag = (system_state[3:0] == IDLE) ? b'0 : b'1;
+  assign is_write_read_flag = (system_state[3:0] == IDLE) ? 0 : 1;
 
   //always block, 1s trigger once to read write
   // using counter for limit position
@@ -37,11 +43,12 @@ module Bram_read_write(
       counter <= 0;
     end
     else begin
-      if(counter < (clk_freq-1) begin
+      if(counter < (set_clk-1)) begin
         counter <= counter + 1;
       end
       else begin
-        counter <= 0;
+      // counter is just for FSM  initial setting
+        counter <= counter;
       end
     end
   end
@@ -50,18 +57,20 @@ module Bram_read_write(
   always@(posedge clk or negedge rst)begin
     if(rst==0)begin
       system_state_reg <= 0;
-      system_timeout_reg <= 0;
+      state_timeout_reg <= 0;
+      en <= 0;
     end
     else begin
-      // start writing
-      if(counter_reg == (clk_freq -1)) begin
+      // wait for clocks, then start BRAM interfacing
+      if(counter == (set_clk -1)) begin
         // first is to write data in to BRAM
         system_state_reg <= WR;
         state_timeout_reg <= 0;
+        en <= 1;
       end
       else begin
         if(system_state_reg == WR)begin
-          if(state_timeout_reg < BRAM_size -1)begin
+          if(state_timeout_reg < bram_size -1)begin
             state_timeout_reg <= state_timeout_reg +1;
           end
           else begin
@@ -71,10 +80,11 @@ module Bram_read_write(
         end
         else begin
           if(system_state_reg == RD)begin
-            if(state_timeout_reg < RAM_size-1) state_timeout_reg <= state_timeout_reg +1;
+            if(state_timeout_reg < bram_size-1) state_timeout_reg <= state_timeout_reg +1;
             else begin
               state_timeout_reg <= 0;
               system_state_reg <= IDLE;
+              en <= 0;
             end
           end
         end
@@ -114,9 +124,9 @@ module Bram_read_write(
     end
   end
 
-         blk_mem_gen_0 block_Ram(
+    blk_mem_gen_0 BRAM_DUAL_PORT_16_2048(
            .clka(clk),
-           .ena(1),
+           .ena(en),
            .wea(write_en_reg),
            .addra(write_addr_reg),
            .dina(write_data),
@@ -124,11 +134,7 @@ module Bram_read_write(
            .enb(read_en_reg),
            .addrb(read_addr_reg),
            .doutb(read_data)
-         );
-  
-
-
-
+     );
 
 
 endmodule
