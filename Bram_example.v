@@ -30,9 +30,86 @@ module Bram_read_write(
   assign is_write_read_flag = (system_state[3:0] == IDLE) ? b'0 : b'1;
 
   //always block, 1s trigger once to read write
+  // using counter for limit position
   always@(posedge clk or negedge rst)begin
+    // counter reset process
     if(rst ==0)begin
       counter <= 0;
+    end
+    else begin
+      if(counter < (clk_freq-1) begin
+        counter <= counter + 1;
+      end
+      else begin
+        counter <= 0;
+      end
+    end
+  end
+
+  // FSM Setting
+  always@(posedge clk or negedge rst)begin
+    if(rst==0)begin
+      system_state_reg <= 0;
+      system_timeout_reg <= 0;
+    end
+    else begin
+      // start writing
+      if(counter_reg == (clk_freq -1)) begin
+        system_state_reg <= WR;
+        state_timeout_reg <= 0;
+      end
+      else begin
+        if(system_state_reg == WR)begin
+          if(state_timeout_reg < BRAM_size -1)begin
+            state_timeout_reg <= state_timeout_reg +1;
+          end
+          else begin
+            state_timeout_reg <= 0;
+            system_state_reg <= RD;
+          end
+        end
+        else begin
+          if(system_state_reg == RD)begin
+            if(state_timeout_reg < RAM_size-1) state_timeout_reg <= state_timeout_reg +1;
+            else begin
+              state_timeout_reg <= 0;
+              system_state_reg <= IDLE;
+            end
+          end
+        end
+      end
+    end
+  end
+
+  // What data do you wanna write?
+  always@(posedge clk or negedge rst)begin
+    if(rst==0)begin
+      write_data_reg <=0;
+      write_addr_reg <=0;
+      read_addr_reg <=0;
+    end
+    else begin
+      if(system_state_reg == WR)begin
+        // WRITE_DATA -> COUNT DATA.
+        write_data_reg <= write_data_reg + 1;
+        // UP REGISTER VALUE
+        write_addr_reg <= write_addr_reg +1;
+        read_en_reg <= 0;
+        write_en_reg <= 1;
+      end
+      else if(system_state_reg == RD)begin
+        read_addr_reg <= read_addr_reg +1;
+        read_en_reg <= 1;
+        write_en_reg <= 0;
+      end
+      else if(system_state_reg == IDLE)begin
+        write_data_reg <=0;
+        read_addr_reg <=0;
+        write_addr_reg <=0;
+        write_en_reg <= 0;
+        read_en_reg <= 0;
+      end
+      end
     end
   end
   
