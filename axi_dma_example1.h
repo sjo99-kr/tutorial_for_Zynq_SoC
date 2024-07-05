@@ -40,7 +40,7 @@ int main()
     u32 data_device_to_dma[DMA_TRANSFER_SIZE]; // DMA-write moves data from AXI-stream FIFO in PL fabric to this data buffer
 
     init_platform();
-    xil_printf("FPGA- DMA EXAMPLE_1");
+    xil_printf("FPGA- DMA EXAMPLE_1\n");
 
     // Disable cache to prevent cache search forcing external memroy access in this demonstration
     Xil_DCacheDisable();
@@ -66,17 +66,19 @@ int main()
     //------------------------------------------------------------------------------------------------------//
 
     //-------------------------------------- Submit DMA-READ data to AXI4-stream FIFO in PL fabric-------------------------------------//
-    status = XAxiDma_SimpleTransfer(&dma_ctl, data_dma_to_device, DMA_TRANSFER_SIZE,
+    status = XAxiDma_SimpleTransfer(&dma_ctl, data_dma_to_device, DMA_TRANSFER_SIZE * 4,
     XAXIDMA_DMA_TO_DEVICE);
     if(status != XST_SUCCESS){
-        xil_printf("TRANSFER FAILED (DMA -> DEVICE) \n");
+        xil_printf("TRANSFER FAILED (DMA -> DEVICE) 1\n");
         return XST_FAILURE;
     }
     usleep(1);
+    /*
     if(XAxiDma_Busy(&dma_ctl, XAXIDMA_DMA_TO_DEVICE));{
-        xil_printf("TRANSFER FAILED (DMA -> DEVICE) \n");
+        xil_printf("TRANSFER FAILED (DMA -> DEVICE) 2\n");
         return XST_FAILURE;
     }
+    */
 
     //-------------------------------------- Submit DMA-WRITE data to DDR FROM  AXI-STREAM FIFO in PL fabric-------------------------------------//
     status = XAxiDma_SimpleTransfer(&dma_ctl, data_device_to_dma, DMA_TRANSFER_SIZE * 4,
@@ -86,15 +88,17 @@ int main()
         return XST_FAILURE;
     }
     usleep(1);
+    /*
     if(XAxiDma_Busy(&dma_ctl, XAXIDMA_DEVICE_TO_DMA)){
         xil_printf("TRANSFER FAILED (DEVICE -> DMA) \n");
         return XST_FAILURE;
     }
+    */
 
     // varify data exchange between AXI-STREAM FIFO AND DRAM
     xil_printf("Verify the DRAM DATA in data_device_to_dma");
     for(u32 i=0; i<DMA_TRANSFER_SIZE; i++){
-        xil_printf("Received DATA: (index: %d ) data: %u", i, data_device_to_dma[i]);
+        xil_printf("Received DATA: (index: %d ) data: %u\n", i, data_device_to_dma[i]);
     }
 
     xil_printf("Successfully ran DMA EXAMPLE_1");
