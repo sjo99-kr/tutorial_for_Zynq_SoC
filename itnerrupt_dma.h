@@ -35,7 +35,6 @@
 
 #define DMA_DEVICE_ID XPAR_AXI_DMA_0_BASEADDR
 
-
 static XAxiDma dma_ctl;
 static XAxiDma_Config *dma_cfg;
 
@@ -47,18 +46,15 @@ XScuGic IntcInstance;
 void Intr_handler(void* CallBackRef){
   //  u32 data_dma_to_device = 2;
  //   u32 status;
+    XScuGic_Disable(&IntcInstance, 61);
 
     xil_printf("\t\tInterrupt Occurred\t\t\n");
+    xil_printf("\t\tInterrupt Occurred\t\t\n");
+    xil_printf("\t\tInterrupt Occurred\t\t\n");
+
   //  Xil_DCacheFlushRange((u32)&data_dma_to_device,1*sizeof(u32));
 
-    XScuGic_Disable(&IntcInstance, 61);
-    usleep(10000000);
-    u32 p[8];
-    XAxiDma_SimpleTransfer(&dma_ctl, (u32)p, 4*8, XAXIDMA_DEVICE_TO_DMA);
 
-    for(int j =0; j<8; j++){
-        xil_printf("received data: %d \n", p[j]);
-    }
 
 /*
     status = XAxiDma_SimpleTransfer((XAxiDma*) CallBackRef, (u32)&data_dma_to_device, 4, 
@@ -83,15 +79,15 @@ void Intr_handler(void* CallBackRef){
 
     if(count<3){
         XScuGic_Enable(&IntcInstance, 61);  
+        xil_printf("enable interrupt \r\n");
     }
-    count = count+1;
+    count = count +1;
+}
 
-    i= i+8;
-    usleep(10);
-    u32 k[8] = {i,i+1,i+2,i+3,i+4,i+5,i+6,i+7};
-    Xil_DCacheFlushRange((u32)k, 8*sizeof(u32));
-    XAxiDma_SimpleTransfer(&dma_ctl, (u32)k, 32, XAXIDMA_DMA_TO_DEVICE);
-    
+u32 checkIdle(u32 baseAddress,u32 offset){
+	u32 status;
+	status = (XAxiDma_ReadReg(baseAddress,offset))&XAXIDMA_IDLE_MASK;
+	return status;
 }
 
 int main()
@@ -115,7 +111,7 @@ int main()
     }
     XAxiDma_IntrEnable(&dma_ctl, XAXIDMA_IRQ_IOC_MASK, XAXIDMA_DEVICE_TO_DMA);
 
-
+/*
     //Interrupt COntroller setting
     XScuGic_Config* IntcConfig;
     IntcConfig = XScuGic_LookupConfig(XPAR_SCUGIC_SINGLE_DEVICE_ID);
@@ -125,7 +121,9 @@ int main()
         printf("INTERRUPT CONTROLLER SETTING FAILED \r\n");
         return XST_FAILURE;
     }
-    XScuGic_SetPriorityTriggerType(&IntcInstance, 61, 0xA0, 3);
+*/
+/*
+//    XScuGic_SetPriorityTriggerType(&IntcInstance, 61, 0xA0, 3);
     // connect interrupt handler
     status =XScuGic_Connect(&IntcInstance, 61, (Xil_InterruptHandler) 
     Intr_handler, (void*) &dma_ctl);
@@ -138,7 +136,7 @@ int main()
     Xil_ExceptionInit();
     Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT, (Xil_ExceptionHandler) XScuGic_InterruptHandler, (void*)&IntcInstance);
     Xil_ExceptionEnable();
-
+*/
     // set up interrupt first time
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -155,11 +153,61 @@ int main()
         for(int j =0; j <8; j++){
         xil_printf("sended data : %d \n", k[j]);
     }
+
+
+
+
     
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+    i = i+8;
+    u32 a[4] = {i,i+1,i+2,i+3};
+    Xil_DCacheFlushRange((u32)a, 8*sizeof(u32));
+
+    xil_printf("send data to device for second interrupt\n");
+
+    status = checkIdle(XPAR_AXI_DMA_0_BASEADDR,0x4);
+	while(status == 0){
+		status = checkIdle(XPAR_AXI_DMA_0_BASEADDR,0x4);
+    };
+
+    XAxiDma_SimpleTransfer(&dma_ctl, (u32)a, 4*4 , XAXIDMA_DMA_TO_DEVICE);
+
+
+    u32 p[12];
+    usleep(100);
+        for(int j =0; j <4; j++){
+        xil_printf("sended data : %d \n", a[j]);
+    }
+    /*
+    status = checkIdle(XPAR_AXI_DMA_0_BASEADDR,0x34);
+	while(status == 0){
+		status = checkIdle(XPAR_AXI_DMA_0_BASEADDR,0x34);
+    };
+    */
+    sleep(2);
+    xil_printf("send data to device for first interrupt\n");
+    XAxiDma_SimpleTransfer(&dma_ctl, (u32)p, 4*12 , XAXIDMA_DEVICE_TO_DMA);
+
+    usleep(100);
+        for(int j =0; j <12; j++){
+        xil_printf("recevied  data : %d \n", p[j]);
+    }
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
 
 /*
     xil_printf("senf data 2 to device for second interrupt \n");
@@ -174,13 +222,6 @@ int main()
         usleep(100);
     }
 
-    u32 data_device_to_dma[10];
-
-    status = XAxiDma_SimpleTransfer(&dma_ctl, (u32)data_device_to_dma,
-     4*10, XAXIDMA_DEVICE_TO_DMA);
-    
-
-    xil_printf("get data form devcie \n\r" );
     
 
     print("Good Job\n\r");
@@ -188,3 +229,4 @@ int main()
     cleanup_platform();
     return 0;
 }
+
