@@ -205,7 +205,7 @@ int main()
 
     u32 p[16];
     sleep(2);
-    xil_printf("send data to device for first interrupt\n");
+    xil_printf("received data to device for first interrupt\n");
     XAxiDma_SimpleTransfer(&dma_ctl, (u32)p, 4*16 , XAXIDMA_DEVICE_TO_DMA);
 
     usleep(100);
