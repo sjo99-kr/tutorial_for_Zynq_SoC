@@ -43,10 +43,17 @@ u32 count =0;
 int done =1;
 XScuGic IntcInstance;
 
+void recevied_handler(void* CallBackRef){
+    xil_printf("\t\trecevied Ocucured \t\t\n");
+    xil_printf("\t\trecevied Ocucured \t\t\n");
+    xil_printf("\t\trecevied Ocucured \t\t\n");
+
+}
+
 void Intr_handler(void* CallBackRef){
   //  u32 data_dma_to_device = 2;
  //   u32 status;
-    XScuGic_Disable(&IntcInstance, 61);
+   // XScuGic_Disable(&IntcInstance, 61);
 
     xil_printf("\t\tInterrupt Occurred\t\t\n");
     xil_printf("\t\tInterrupt Occurred\t\t\n");
@@ -76,12 +83,13 @@ void Intr_handler(void* CallBackRef){
         xil_printf("finished TRY\n\r");
     }
     */
-
+/*
     if(count<3){
         XScuGic_Enable(&IntcInstance, 61);  
         xil_printf("enable interrupt \r\n");
     }
     count = count +1;
+*/
 }
 
 u32 checkIdle(u32 baseAddress,u32 offset){
@@ -111,7 +119,7 @@ int main()
     }
     XAxiDma_IntrEnable(&dma_ctl, XAXIDMA_IRQ_IOC_MASK, XAXIDMA_DEVICE_TO_DMA);
 
-/*
+
     //Interrupt COntroller setting
     XScuGic_Config* IntcConfig;
     IntcConfig = XScuGic_LookupConfig(XPAR_SCUGIC_SINGLE_DEVICE_ID);
@@ -121,9 +129,18 @@ int main()
         printf("INTERRUPT CONTROLLER SETTING FAILED \r\n");
         return XST_FAILURE;
     }
-*/
-/*
-//    XScuGic_SetPriorityTriggerType(&IntcInstance, 61, 0xA0, 3);
+
+    // interrupt handler 
+    XScuGic_SetPriorityTriggerType(&IntcInstance, 62, 0xA1, 3);
+    // connect interrupt handler
+    status =XScuGic_Connect(&IntcInstance, 62, (Xil_InterruptHandler) 
+    recevied_handler, (void*) &dma_ctl);
+    if(status !=XST_SUCCESS){
+        xil_printf("connect interrupt handler failed \n\r");
+        return XST_FAILURE;
+    }
+
+    XScuGic_SetPriorityTriggerType(&IntcInstance, 61, 0xA0, 3);
     // connect interrupt handler
     status =XScuGic_Connect(&IntcInstance, 61, (Xil_InterruptHandler) 
     Intr_handler, (void*) &dma_ctl);
@@ -131,27 +148,44 @@ int main()
         xil_printf("connect interrupt handler failed \n\r");
         return XST_FAILURE;
     }
+
+
+
     XScuGic_Enable(&IntcInstance, 61);
+    XScuGic_Enable(&IntcInstance, 62);
+
 
     Xil_ExceptionInit();
     Xil_ExceptionRegisterHandler(XIL_EXCEPTION_ID_INT, (Xil_ExceptionHandler) XScuGic_InterruptHandler, (void*)&IntcInstance);
     Xil_ExceptionEnable();
-*/
+
     // set up interrupt first time
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-    u32 k[8] = {i,i+1,i+2,i+3,i+4,i+5,i+6,i+7};
-    Xil_DCacheFlushRange((u32)k, 8*sizeof(u32));
+    u32 a[8] = {i,i+1,i+2,i+3,i+4,i+5,i+6,i+7};
+    Xil_DCacheFlushRange((u32)a, 8*sizeof(u32));
 
     xil_printf("send data to device for first interrupt\n");
-    XAxiDma_SimpleTransfer(&dma_ctl, (u32)k, 4*8 , XAXIDMA_DMA_TO_DEVICE);
+    XAxiDma_SimpleTransfer(&dma_ctl, (u32)a, 4*8 , XAXIDMA_DMA_TO_DEVICE);
 
     usleep(100);
         for(int j =0; j <8; j++){
-        xil_printf("sended data : %d \n", k[j]);
+        xil_printf("sended data : %d \n", a[j]);
+    }
+
+
+    u32 b[8] = {i,i+1,i+2,i+3,i+4,i+5,i+6,i+7};
+    Xil_DCacheFlushRange((u32)b, 8*sizeof(u32));
+
+    xil_printf("send data to device for second interrupt\n");
+    XAxiDma_SimpleTransfer(&dma_ctl, (u32)b, 4*8 , XAXIDMA_DMA_TO_DEVICE);
+
+    usleep(100);
+        for(int j =0; j <8; j++){
+        xil_printf("sended data : %d \n", b[j]);
     }
 
 
@@ -168,37 +202,14 @@ int main()
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-    i = i+8;
-    u32 a[4] = {i,i+1,i+2,i+3};
-    Xil_DCacheFlushRange((u32)a, 8*sizeof(u32));
 
-    xil_printf("send data to device for second interrupt\n");
-
-    status = checkIdle(XPAR_AXI_DMA_0_BASEADDR,0x4);
-	while(status == 0){
-		status = checkIdle(XPAR_AXI_DMA_0_BASEADDR,0x4);
-    };
-
-    XAxiDma_SimpleTransfer(&dma_ctl, (u32)a, 4*4 , XAXIDMA_DMA_TO_DEVICE);
-
-
-    u32 p[12];
-    usleep(100);
-        for(int j =0; j <4; j++){
-        xil_printf("sended data : %d \n", a[j]);
-    }
-    /*
-    status = checkIdle(XPAR_AXI_DMA_0_BASEADDR,0x34);
-	while(status == 0){
-		status = checkIdle(XPAR_AXI_DMA_0_BASEADDR,0x34);
-    };
-    */
+    u32 p[16];
     sleep(2);
     xil_printf("send data to device for first interrupt\n");
-    XAxiDma_SimpleTransfer(&dma_ctl, (u32)p, 4*12 , XAXIDMA_DEVICE_TO_DMA);
+    XAxiDma_SimpleTransfer(&dma_ctl, (u32)p, 4*16 , XAXIDMA_DEVICE_TO_DMA);
 
     usleep(100);
-        for(int j =0; j <12; j++){
+        for(int j =0; j <16; j++){
         xil_printf("recevied  data : %d \n", p[j]);
     }
 
@@ -229,4 +240,3 @@ int main()
     cleanup_platform();
     return 0;
 }
-
