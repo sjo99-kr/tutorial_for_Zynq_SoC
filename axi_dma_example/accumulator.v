@@ -5,6 +5,8 @@ Tutorial Materials for Embedded Software using Vitis IDE
 
 Using Acumulator Custom Ip, Do AXI-DMA process
 
+Custom IP FOR axi_dma_interrupt and axi_dma_example part
+
 made by Seongwon Jo,
 
 
