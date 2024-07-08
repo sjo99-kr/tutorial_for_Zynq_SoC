@@ -6,7 +6,7 @@ Using AXI_Bram controller Ip And BRAM Setting by PL, WRITE DATA AND READ DATA FR
 
 made by Seongwon Jo,
 
-BRAM has Simple Dual port
+BRAM has Single port
 *******************************************************************************/
 
 
