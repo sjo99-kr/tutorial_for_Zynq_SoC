@@ -46,6 +46,8 @@ int main(){
 	status = XAxiDma_SimpleTransfer(&myDma, (u32)b, 8*sizeof(u32),XAXIDMA_DEVICE_TO_DMA);
 	status = XAxiDma_SimpleTransfer(&myDma, (u32)a, 8*sizeof(u32),XAXIDMA_DMA_TO_DEVICE);//typecasting in C/C++
 // XAXIDMA_SIMPLETRANSFER CAN NOT SEND DATA IN SG(Scatter - Gatter) DMA ENGINE!!!
+
+// THE DATA TRANSFER IS NOT SEQUENTIAL in Scatter Gatter Mode, but when we use Xaxidma_simple transfer, we send the parameters for one base addr and data size.
 	
 
 // Using this form for check DMA State Register
