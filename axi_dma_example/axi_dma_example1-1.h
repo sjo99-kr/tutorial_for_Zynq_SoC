@@ -69,7 +69,7 @@ int main()
         xil_printf("TRANSFER FAILED (DMA -> DEVICE) 1\n");
         return XST_FAILURE;
     }
-    usleep(1);
+    // Check for transfer end , we can use under block
     /*
     if(XAxiDma_Busy(&dma_ctl, XAXIDMA_DMA_TO_DEVICE));{
         xil_printf("TRANSFER FAILED (DMA -> DEVICE) 2\n");
