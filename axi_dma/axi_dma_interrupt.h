@@ -51,45 +51,10 @@ void recevied_handler(void* CallBackRef){
 }
 
 void Intr_handler(void* CallBackRef){
-  //  u32 data_dma_to_device = 2;
- //   u32 status;
-   // XScuGic_Disable(&IntcInstance, 61);
-
     xil_printf("\t\tInterrupt Occurred\t\t\n");
     xil_printf("\t\tInterrupt Occurred\t\t\n");
     xil_printf("\t\tInterrupt Occurred\t\t\n");
 
-  //  Xil_DCacheFlushRange((u32)&data_dma_to_device,1*sizeof(u32));
-
-
-
-/*
-    status = XAxiDma_SimpleTransfer((XAxiDma*) CallBackRef, (u32)&data_dma_to_device, 4, 
-    XAXIDMA_DMA_TO_DEVICE);
-    if(status!=XST_SUCCESS){
-        xil_printf("DMA TRANSFER TO DEVCIE FAILED \r\n");
-    }
-
-    usleep(100);
-
-
-
-    i = i + 1;
-
-    if(i>8){
-        done =0;
-        XScuGic_Disable(&IntcInstance, 61);
-        Xil_ExceptionDisable();
-        xil_printf("finished TRY\n\r");
-    }
-    */
-/*
-    if(count<3){
-        XScuGic_Enable(&IntcInstance, 61);  
-        xil_printf("enable interrupt \r\n");
-    }
-    count = count +1;
-*/
 }
 
 u32 checkIdle(u32 baseAddress,u32 offset){
