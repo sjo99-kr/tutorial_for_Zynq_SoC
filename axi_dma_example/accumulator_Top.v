@@ -1,74 +1,53 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 07/07/2024 01:02:11 PM
-// Design Name: 
-// Module Name: accumulator
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
 
-module accumulator(
-    input i_clk,
-    input i_rst,
-    input [31:0] i_data,
-    input [31:0] i_data_valid,
-    input i_data_last,
+
+module accumulator_Top(
+    input axi_clk,
+    input axi_rst,
+    // slave interface
+    input [31:0] s_axis_data,
+    input s_axis_valid,
+    input s_axis_last,
+    output s_axis_ready,
+    // master interace
+    output [31:0] m_axis_data,
+    output m_axis_valid,
+    input m_axis_ready,
     
-    output reg [31:0] o_data,
-    output reg o_data_valid,
-    output reg o_intr
+    //interrupt 
+    output o_intr
     );
-    reg [4:0] counter;
     
-    always@(posedge i_clk)begin
-        if(!i_rst)begin
-            o_data <= 0;
-            o_data_valid <= 0;
-            counter <= 1;
-        end
-        else begin
-            if(i_data_valid)begin
-                o_data <= o_data + i_data;
-                o_data_valid <= 1;
-                if(counter ==8)begin
-                    counter <= 1;
-                end
-                else begin
-                    counter <= counter + 1;
-                end
-            end
-            else begin
-                o_data_valid <= 0;
-            end
-        end
-    end
+    wire [31:0] acc_out;
+    wire acc_valid;
+    wire axis_prog_full;
     
-    always@(posedge i_clk)begin
-        if(!i_rst)begin
-            o_intr <= 0;
-        end
-        else begin
-            if( counter % 8 == 0)begin
-                o_intr <= 1;
-            end
-            else begin
-                o_intr <= 0;
-            end
-        end
-    end
+    assign s_axis_ready = !axis_prog_full;
     
-
+    accumulator c1(
+        .i_clk(axi_clk),
+        .i_rst(axi_rst),
+        .i_data(s_axis_data),
+        .i_data_valid(s_axis_valid),
+        .i_data_last(s_axis_last),
+        
+        .o_data(acc_out),
+        .o_data_valid(acc_valid),
+        .o_intr(o_intr)
+    );
+    fifo_generator_0 buffer(
+        .wr_rst_busy(),        // output wire wr_rst_busy
+       .rd_rst_busy(),        // output wire rd_rst_busy
+       .s_aclk(axi_clk),                  // input wire s_aclk
+       .s_aresetn(axi_rst),            // input wire s_aresetn
+       .s_axis_tvalid(acc_valid),    // input wire s_axis_tvalid
+       .s_axis_tready(),    // output wire s_axis_tready
+       .s_axis_tdata(acc_out),      // input wire [7 : 0] s_axis_tdata
+       
+       .m_axis_tvalid(m_axis_valid),    // output wire m_axis_tvalid
+       .m_axis_tready(m_axis_ready),    // input wire m_axis_tready
+       .m_axis_tdata(m_axis_data),      // output wire [7 : 0] m_axis_tdata
+   .    axis_prog_full(axis_prog_full)  // output wire axis_prog_full
+    );
 endmodule
