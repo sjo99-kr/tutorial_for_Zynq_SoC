@@ -62,11 +62,13 @@ module accumulator_Top(
        .s_aresetn(axi_rst),            // input wire s_aresetn
        .s_axis_tvalid(acc_valid),    // input wire s_axis_tvalid
        .s_axis_tready(),    // output wire s_axis_tready
-       .s_axis_tdata(acc_out),      // input wire [7 : 0] s_axis_tdata
+        .s_axis_tdata(acc_out),      // input wire [31 : 0] s_axis_tdata
        
-       .m_axis_tvalid(m_axis_valid),    // output wire m_axis_tvalid
-       .m_axis_tready(m_axis_ready),    // input wire m_axis_tready
-       .m_axis_tdata(m_axis_data),      // output wire [7 : 0] m_axis_tdata
-   .    axis_prog_full(axis_prog_full)  // output wire axis_prog_full
+        .m_axis_tvalid(m_axis_valid),    // output wire m_axis_tvalid
+        .m_axis_tready(m_axis_ready),    // input wire m_axis_tready
+        .m_axis_tdata(m_axis_data),      // output wire [31 : 0] m_axis_tdata
+        .axis_prog_full(axis_prog_full)  // output wire axis_prog_full
+        // axis_prog_full is valid when the AXI-Stream FIFO buffer is full.
+        // when the FIFO buffer is full, we can't received Data from DMA, because the s_axis_ready is set 0.
     );
 endmodule
