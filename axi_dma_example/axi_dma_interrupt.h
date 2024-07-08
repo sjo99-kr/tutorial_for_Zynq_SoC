@@ -1,36 +1,34 @@
 /******************************************************************************
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
-* SPDX-License-Identifier: MIT
-******************************************************************************/
-/*
- * helloworld.c: simple test application
- *
- * This application configures UART 16550 to baud rate 9600.
- * PS7 UART (Zynq) is not initialized by this application, since
- * bootrom/bsp configures it to baud rate 115200
- *
- * ------------------------------------------------
- * | UART TYPE   BAUD RATE                        |
- * ------------------------------------------------
- *   uartns550   9600
- *   uartlite    Configurable only in HW design
- *   ps7_uart    115200 (configured by bootrom/bsp)
- */
+
+Tutorial Materials for Embedded Software using Vitis IDE
+
+Using Acumulator Custom Ip, Do AXI-DMA process  with Interrupt Signal
+
+made by Seongwon Jo,
 
 
+*******************************************************************************/
+
+// Library Linking
 #include <stdio.h>
 #include <xaxidma_hw.h>
 #include <xil_exception.h>
-#include <xparameters_ps.h>
+#include <xparameters_ps.h> 
 #include <xstatus.h>
 #include "platform.h"
 #include "xil_printf.h"
 #include "xil_cache.h"
-#include "xparameters.h"
-#include "xaxidma.h"
-#include "xil_types.h"
+#include "xparameters.h" 
+#include "xaxidma.h" // Library for AXI-DMA
+#include "xil_types.h" 
 #include "sleep.h"
-#include "xscugic.h"
+#include "xscugic.h" // Library for Interrupt Handling
+
+// 61 -> Interrupt ID of IRQ_F2P [0] is connected to Accumulator IP
+// Interrupt of 61 is set 1 when the number of received data is 8 for each transer
+
+// 62 -> Interrupt ID of IRQ_F2P [1] is connected DMA (s2mm_intr_out)
+// Interrupt of 62 is set 1 when the DMA engine received Data from AXI-STREAM FIFO
 
 
 #define DMA_DEVICE_ID XPAR_AXI_DMA_0_BASEADDR
@@ -115,7 +113,8 @@ int main()
     }
 
 
-
+// Enable Interrupt from 61 (Interrupt ID)
+// Enable Interrupt from 62 (Interrupt ID)
     XScuGic_Enable(&IntcInstance, 61);
     XScuGic_Enable(&IntcInstance, 62);
 
