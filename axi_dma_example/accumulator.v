@@ -3,12 +3,13 @@
 
 Tutorial Materials for Embedded Software using Vitis IDE
 
-Using AXI_Bram controller Ip, WRITE DATA AND READ DATA FROM BRAM 
+Using Acumulator Custom Ip, Do AXI-DMA process
 
 made by Seongwon Jo,
 
 
 *******************************************************************************/
+
 
 // Accumulator Custom IP in PL
 module accumulator(
