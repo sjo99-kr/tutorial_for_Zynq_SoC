@@ -1,11 +1,3 @@
-/*
- * dmaTest.c
- *
- *  Created on: Mar 1, 2020
- *      Author: VIPIN
- */
-
-
 #include "xaxidma.h"
 #include "xparameters.h"
 #include "sleep.h"
