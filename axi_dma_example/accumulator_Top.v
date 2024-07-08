@@ -16,8 +16,8 @@ module accumulator_Top(
     input axi_rst,
     // slave interface (s_axis interface)
     // in AXI_INTERFACE, there are 4 signals in master/slave ports
-    // s_axis_valid(input) : it signals the received data is valid data. 
-    // s_axis_data (input) : it signals the data from DMA 
+    // s_axis_valid(input) : it signals the received data is valid data to Custom IP
+    // s_axis_data (input) : it signals the data that is from DMA  
     // s_axis_last (input) : it signals the received data is last data.
     // s_axis_ready (output) : it signals that Custom IP is ready for receive data, and send this signal to DMA
     input [31:0] s_axis_data,
@@ -50,6 +50,11 @@ module accumulator_Top(
         .o_data_valid(acc_valid),
         .o_intr(o_intr)
     );
+
+    // set AXI-Stream FIFO
+    // axi-dma is interface between Memory Mapped I/O and Axi stream interface.
+    // So we have to set AXI-STREAM FIFO for interfacing DMA.
+    // if we want to send data from BRAM to DMA, we have to use cdma which is the interface between Memory Mapped I/O and Memory Mapped I/O
     fifo_generator_0 buffer(
         .wr_rst_busy(),        // output wire wr_rst_busy
        .rd_rst_busy(),        // output wire rd_rst_busy
