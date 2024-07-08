@@ -1,21 +1,15 @@
 /******************************************************************************
-* Copyright (C) 2023 Advanced Micro Devices, Inc. All Rights Reserved.
-* SPDX-License-Identifier: MIT
-******************************************************************************/
-/*
- * helloworld.c: simple test application
- *
- * This application configures UART 16550 to baud rate 9600.
- * PS7 UART (Zynq) is not initialized by this application, since
- * bootrom/bsp configures it to baud rate 115200
- *
- * ------------------------------------------------
- * | UART TYPE   BAUD RATE                        |
- * ------------------------------------------------
- *   uartns550   9600
- *   uartlite    Configurable only in HW design
- *   ps7_uart    115200 (configured by bootrom/bsp)
- */
+
+Tutorial Materials for Embedded Software using Vitis IDE
+
+Using AXI_Bram controller Ip And BRAM Setting by PL, WRITE DATA AND READ DATA FROM BRAM 
+
+made by Seongwon Jo,
+
+BRAM has Simple Dual port
+*******************************************************************************/
+
+
 
 #include <stdio.h>
 #include <xbram_hw.h>
@@ -45,6 +39,7 @@ int main()
         wdata32 = wdata32 + 1;
     }
     xil_printf("bram_write done");
+    
     // bram read
     rdata32 = 0;
     xil_printf("bram_read process \r\n");
@@ -57,9 +52,7 @@ int main()
         }
         wdata32 = wdata32 + 1;
     }
-    xil_printf("\r\n error_count : %d .. \r\n", error_cnt);
     while(1);
-
 
     cleanup_platform();
     return 0;
