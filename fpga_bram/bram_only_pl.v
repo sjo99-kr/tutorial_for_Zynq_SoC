@@ -17,19 +17,19 @@ module Bram_read_write(
   reg [31:0] counter; // counter for Write or Read flag
   
   // using system-verilog when porting FPGA
-  (*mark_debug="true"*) reg[3:0] system_state_reg;
+  reg[3:0] system_state_reg;
   reg [31:0] state_timeout_reg;
-  (*mark_debug="true"*) reg[15:0] write_data_reg;
-  (*mark_debug="true"*) reg[19:0] read_addr_reg;
-  (*mark_debug="true"*) reg[19:0] write_addr_reg;
+  reg[15:0] write_data_reg;
+  reg[19:0] read_addr_reg;
+  reg[19:0] write_addr_reg;
 
-  (*mark_debug="true"*) wire [15:0] read_data;
-  (*mark_debug="true"*) wire [15:0] write_data;
-  (*mark_debug="true"*) reg read_en_reg;
-  (*mark_debug="true"*) reg write_en_reg;
+  wire [15:0] read_data;
+  wire [15:0] write_data;
+  reg read_en_reg;
+  reg write_en_reg;
 
   wire [3:0] system_state;
-  (*mark_debug="true"*) wire is_write_read_flag;
+  wire is_write_read_flag;
   
   assign system_state = system_state_reg;
   assign write_data[15:0] = write_data_reg[15:0];
