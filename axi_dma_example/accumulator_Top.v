@@ -1,11 +1,25 @@
 `timescale 1ns / 1ps
 
+/******************************************************************************
 
+Tutorial Materials for Embedded Software using Vitis IDE
+
+Using Acumulator Custom Ip, Do AXI-DMA process
+
+made by Seongwon Jo,
+
+
+*******************************************************************************/
 
 module accumulator_Top(
     input axi_clk,
     input axi_rst,
-    // slave interface
+    // slave interface (s_axis interface)
+    // in AXI_INTERFACE, there are 4 signals in master/slave ports
+    // s_axis_valid(input) : it signals the received data is valid data. 
+    // s_axis_data (input) : it signals the data from DMA 
+    // s_axis_last (input) : it signals the received data is last data.
+    // s_axis_ready (output) : it signals that Custom IP is ready for receive data, and send this signal to DMA
     input [31:0] s_axis_data,
     input s_axis_valid,
     input s_axis_last,
