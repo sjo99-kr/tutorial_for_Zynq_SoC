@@ -9,6 +9,7 @@ made by Seongwon Jo,
 
 *******************************************************************************/
 
+// Library Linking
 #include <stdio.h>
 #include <xstatus.h>
 #include "platform.h"
@@ -19,9 +20,11 @@ made by Seongwon Jo,
 #include "xil_types.h"
 #include "sleep.h"
 
+// Set DMA controller BASEADDR
 #define DMA_DEVICE_ID XPAR_AXI_DMA_0_BASEADDR
-#define DMA_TRANSFER_SIZE 16 // perform DMA transfer to 16 32-bit words in each direction
+#define DMA_TRANSFER_SIZE 16 // 16 means the number of data for each transfer
 
+// Define DMA Configurations
 static XAxiDma dma_ctl;
 static XAxiDma_Config *dma_cfg;
 
@@ -32,7 +35,7 @@ int main()
     u32 data_device_to_dma[DMA_TRANSFER_SIZE]; // DMA-write moves data from AXI-stream FIFO in PL fabric to this data buffer
 
     init_platform();
-    xil_printf("FPGA- DMA EXAMPLE_1\n");
+    xil_printf("AXI_DMA EXAMPLE_1\n");
 
     // Disable cache to prevent cache search forcing external memroy access in this demonstration
     Xil_DCacheDisable();
@@ -52,7 +55,7 @@ int main()
     //------------------------------------------------------------------------------------------------------//
 
     //-------------------------------------- Initialize DMA-READ data buffer setting-------------------------------------//
-    for(u32 i =0; i<DMA_TRANSFER_SIZE; i++){
+    for(u32 i =0; i<DMA_TRANSFER_SIZE; i++){ 
         data_dma_to_device[i] = i;
     }
     //------------------------------------------------------------------------------------------------------//
@@ -60,6 +63,8 @@ int main()
     //-------------------------------------- Submit DMA-READ data to AXI4-stream FIFO in PL fabric-------------------------------------//
     status = XAxiDma_SimpleTransfer(&dma_ctl, data_dma_to_device, DMA_TRANSFER_SIZE * 4,
     XAXIDMA_DMA_TO_DEVICE);
+    // xaxidma_simpletransfer(&xaxi_dma, data address in DDR, size of datas (byte), direction)
+    
     if(status != XST_SUCCESS){
         xil_printf("TRANSFER FAILED (DMA -> DEVICE) 1\n");
         return XST_FAILURE;
@@ -75,17 +80,14 @@ int main()
     //-------------------------------------- Submit DMA-WRITE data to DDR FROM  AXI-STREAM FIFO in PL fabric-------------------------------------//
     status = XAxiDma_SimpleTransfer(&dma_ctl, data_device_to_dma, DMA_TRANSFER_SIZE * 4,
      XAXIDMA_DEVICE_TO_DMA);
+    // xaxidma_simpletransfer(&xaxi_dma, data address in DDR, size of datas (byte), direction)
+
     if(status != XST_SUCCESS){
         xil_printf("TRANSFER FAILED (DEVICE -> DMA) \n");
         return XST_FAILURE;
     }
     usleep(1);
-    /*
-    if(XAxiDma_Busy(&dma_ctl, XAXIDMA_DEVICE_TO_DMA)){
-        xil_printf("TRANSFER FAILED (DEVICE -> DMA) \n");
-        return XST_FAILURE;
-    }
-    */
+
 
     // varify data exchange between AXI-STREAM FIFO AND DRAM
     xil_printf("Verify the DRAM DATA in data_device_to_dma");
