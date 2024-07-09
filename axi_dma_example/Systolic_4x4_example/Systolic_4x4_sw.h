@@ -1,5 +1,9 @@
 
-
+////      4x4 Matrix - Matrix Multiplication ////////////////////////
+// [ 1 2 3 4 ]                 [ 1 2 3 4 ]
+// [ 1 2 3 4 ]         x       [ 1 2 3 4 ]
+// [ 1 2 3 4 ]                 [ 1 2 3 4 ]
+// [ 1 2 3 4 ]                 [ 1 2 3 4 ]
 
 // Library Linking
 #include <stdio.h>
