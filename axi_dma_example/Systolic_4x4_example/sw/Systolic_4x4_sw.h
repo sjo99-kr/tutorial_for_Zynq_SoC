@@ -1,4 +1,13 @@
+/******************************************************************************
 
+Tutorial Materials for Embedded Software using Vitis IDE
+
+Using AXI_DMA and Custom Ip, for Matrix(4x4) -  Matrix(4x4) Multiplication Example 
+
+made by Seongwon Jo,
+
+
+*******************************************************************************/
 ////      4x4 Matrix - Matrix Multiplication ////////////////////////
 // [ 1 2 3 4 ]                 [ 1 2 3 4 ]
 // [ 1 2 3 4 ]         x       [ 1 2 3 4 ]
