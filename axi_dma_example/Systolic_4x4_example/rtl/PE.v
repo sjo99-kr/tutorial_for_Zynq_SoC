@@ -11,11 +11,9 @@ module PE(
     in_valid, 
     out_valid);
     
-    // clk: clock , rst : reset, 
-    // data_in1
     input i_clk, i_rst;
     input [31:0] row_in; //row data
-    input [31:0] col_in; // GEMM -> data, DNN,CNN -> 0, col data 
+    input [31:0] col_in; 
     input in_valid;
     
     output reg out_valid;
@@ -34,7 +32,7 @@ module PE(
             buffer <= 0;
         end
         else begin
-            if(in_valid == 1)begin //pass to activation
+            if(in_valid == 1)begin 
                 out_valid <= 1;
                 buffer <= row_in * col_in + buffer;
                 from_row <= row_in;
