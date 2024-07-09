@@ -13,9 +13,9 @@ module PE_LAST(
     input in_valid;
     input i_clk, i_rst;
     input [31:0] row_in;
-    input [31:0] col_in; // GEMM -> data, DNN,CNN -> 0 
+    input [31:0] col_in;
   
-    output [31:0]col_result; // 256 x 256 = 2^16 , maximum <2^16-1;
+    output [31:0]col_result; 
     output reg out_valid;
     
     reg [31:0] buffer; 
