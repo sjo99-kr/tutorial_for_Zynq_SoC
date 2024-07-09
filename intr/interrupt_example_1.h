@@ -1,5 +1,13 @@
-// Using LED stream, check about interrupt signal
+/******************************************************************************
 
+Tutorial Materials for Embedded Software using Vitis IDE
+
+Using Custom IP port , GPIO control.
+
+made by Seongwon Jo,
+
+
+*******************************************************************************/
 module led_stream(
     output reg [3:0] led, // LED4 to LED1, 1 on, 0 off
     input clk, // FPGA PL clock, 50 MHz
