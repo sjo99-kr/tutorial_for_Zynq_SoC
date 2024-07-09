@@ -2,7 +2,7 @@
 
 Tutorial Materials for Embedded Software using Vitis IDE
 
-Using Acumulator Custom Ip, Do AXI-DMA process
+Using AXI STREAM FIFO Ip, Do AXI-DMA process
 
 made by Seongwon Jo,
 
