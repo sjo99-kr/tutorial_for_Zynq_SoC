@@ -2,7 +2,7 @@
 
 Tutorial Materials for Embedded Software using Vitis IDE
 
-Using axi4-stream fifo Custom Ip, Do AXI-DMA process  with Interrupt Signal
+Using axi4-stream fifo Custom Ip, Do AXI-DMA process  without Interrupt Signal
 
 made by Seongwon Jo,
 
