@@ -1,4 +1,4 @@
-# Zynq SoC Tutorial
+# Zynq SoC Tutorial (based-on XC7Z020 )
 
 ## GPIO control
 1) GPIO control example (https://github.com/CastleFirstKR/tutorial_for_Zynq_SoC/tree/main/GPIO)
