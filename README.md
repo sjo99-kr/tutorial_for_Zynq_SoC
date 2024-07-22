@@ -12,6 +12,6 @@
 3) Custom axi4-stream fifo (https://github.com/sjo99-kr/tutorial_for_Zynq_SoC/tree/main/axi_dma_example/custom_axi_fifo)
 
 ## AXI_interface with BRAM 
-1) axi_bram example (https://github.com/CastleFirstKR/tutorial_for_Zynq_SoC/tree/main/axi_bram)
-2) axi_bram module_example (https://github.com/sjo99-kr/tutorial_for_Zynq_SoC/tree/main/axi_bram/bram_ex)
-3) axi_bram_dual_port example (https://github.com/sjo99-kr/tutorial_for_Zynq_SoC/tree/main/axi_bram/dual_port) 
+1) axi_bram double_bram_example (https://github.com/sjo99-kr/tutorial_for_Zynq_SoC/tree/main/axi_bram/double_bram)
+2) axi_bram bram_ex (https://github.com/sjo99-kr/tutorial_for_Zynq_SoC/tree/main/axi_bram/bram_ex)
+3) axi_bram dual_port_example (https://github.com/sjo99-kr/tutorial_for_Zynq_SoC/tree/main/axi_bram/dual_port) 
