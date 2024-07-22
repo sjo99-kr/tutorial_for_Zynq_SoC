@@ -3,7 +3,7 @@
 ## GPIO control
 1) GPIO control example (https://github.com/CastleFirstKR/tutorial_for_Zynq_SoC/tree/main/GPIO)
 
-## AXI_DMA with FIFO
+## AXI_DMA with AXI4-STREAM FIFO
 1) Axi_stream FIFO buffer example (https://github.com/CastleFirstKR/tutorial_for_Zynq_SoC/tree/main/axi_dma_example/axi_example)
 
 ## AXI_DMA with Custom IP 
