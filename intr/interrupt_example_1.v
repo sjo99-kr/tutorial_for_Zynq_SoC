@@ -28,7 +28,7 @@ module led_stream(
         end
         else begin
             cnt <= cnt + 1'b1;
-            if(cnt == COUNTER_MAX_CNT) begin//计数0.5s
+            if(cnt == COUNTER_MAX_CNT) begin
                 cnt <= 32'd0;
                 led_on_number <= led_on_number + 1'b1;
             end
