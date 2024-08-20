@@ -16,6 +16,7 @@ module sync_gen #(
     parameter SCREEN = 524              // last line on screen (after back porch)
 )   (
     input               clk_pix,        // pixel clock
+    input               rgb_valid,
     input               reset,          // reset
     output  reg [11:0]  sx,             // horizontal screen position
     output  reg [11:0]  sy,             // vertical screen position
@@ -30,24 +31,29 @@ module sync_gen #(
     // make sy = 0 if end of frame is reached else increment sy
     always@(posedge clk_pix) 
     begin
-        sx <= (sx==LINE) ? 0 : sx+1;
-        if (sx == LINE)
-        begin
-            sy <= (sy == SCREEN) ? 0 : sy + 1;
-        end 
-        if(!reset)
-        begin
+        if(!reset) begin
             sx <= 0;
             sy <= 0;
+        end
+        else begin
+            if(rgb_valid)begin
+                sx <= (sx==LINE) ? 0 : sx+1;
+                if (sx == LINE)
+                begin
+                    sy <= (sy == SCREEN) ? 0 : sy + 1;
+                end
+            end 
         end
     end
 
     // generate hsync, vsync and de signals
     always@(posedge clk_pix) 
     begin
-        hsync <= (sx > HS_STA) && (sx <= HS_END);
-        vsync <= (sy > VS_STA && sy <= VS_END);
-        de <= (sx <= HA_END) && (sy <= VA_END);
+        if(rgb_valid)begin
+            hsync <= (sx > HS_STA) && (sx <= HS_END);
+            vsync <= (sy > VS_STA && sy <= VS_END);
+            de <= (sx <= HA_END) && (sy <= VA_END);
+        end
     end
 
 endmodule
