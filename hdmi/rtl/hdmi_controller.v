@@ -4,6 +4,7 @@
 module hdmi_controller(
 	input          clk,              // 125MHz
 	/////// s_axis_stream_data
+	// we have to get data by axi_stream protocol
 	input  [23:0]  s_axis_video_data,
 	input          s_axis_video_valid,
 	output         s_axis_video_ready,
