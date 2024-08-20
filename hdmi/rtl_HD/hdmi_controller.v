@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 module hdmi_controller(
 	input          clk,              // 100Mhz
-	// pixel clock -> 148.5Mhz
+	// pixel clock -> 74.125 Mhz
 	/////// s_axis_stream_data
 	input  [23:0]  s_axis_video_data,
 	input          s_axis_video_valid,
@@ -24,14 +24,15 @@ module hdmi_controller(
 //////////////////////////////////////////////////////////////////////////////////
     assign HDMI_out = 1'b1;
     assign s_axis_video_ready = 1;
-    // clock _ pix => 148.5Mhz 이어야 한다.
-    
+    // clock _ pix => 74.125 Mhz 이어야 한다.-> 1280x720
+// clock_pix -> clk * mult_master / div_master / div_pix => 74.125 Mhz
+// clock_tmds -> clk * mult_master / div_master / div_tmds =>  741.25 Mhz
     clock_gen #(
         .MULT_MASTER (37.125   ),  // master clock multiplier (2.000-64.000)
         .DIV_MASTER  (5        ),  // master clock divider (1-106)
         .DIV_PIX     (10        ),  // pixel clock divider (1-128)
         .DIV_TMDS    (1        ),  // tmds clock divider (1-128)
-        .IN_PERIOD   (10        )   // period of master clock in ns // 입력에 맞춰서 작동한다.
+	.IN_PERIOD   (10        )   // period of master clock in ns // 100Mhz
     ) clock_gen_inst (
         .clk        (clk        ),  // Input Clock 100MHz
         .clk_pix    (clk_pix    ),  // pixel clock output pixel clock 
