@@ -2,7 +2,14 @@
 // HDMI Displat Driver Module
 //////////////////////////////////////////////////////////////////////////////////
 module hdmi_controller(
-	input          clock,              // 125MHz
+	input          clk,              // 125MHz
+	/////// s_axis_stream_data
+	input  [23:0]  s_axis_video_data,
+	input          s_axis_video_valid,
+	output         s_axis_video_ready,
+	input          s_axis_video_last,
+	input          s_axis_video_user,
+	
 	input          reset,
 	output [2:0]   TMDSp, 
 	output [2:0]   TMDSn,
@@ -15,14 +22,10 @@ module hdmi_controller(
 // Clock Generator Instantiation
 //////////////////////////////////////////////////////////////////////////////////
     assign HDMI_out = 1'b1;
+    assign s_axis_video_ready = 1;
     wire    clk_pix;
     wire    clk_tmds;    
-    wire clk;
-    clk_wiz_0 clk0(
-        .clk_in1(clock), // clock => 50 Mhz
-        .clk_out1(clk), // clk_out1 => 125 Mhz
-        .resetn(reset)
-    );
+    // clock _ pix => 74.01705 이어야 한다.
     
     clock_gen #(
         .MULT_MASTER (63.375   ),  // master clock multiplier (2.000-64.000)
@@ -56,6 +59,7 @@ module hdmi_controller(
         .SCREEN     (799)   // last line on screen (after back porch)
     ) sync_gen_inst (
         .clk_pix    (clk_pix    ),     // pixel clock
+        .rgb_valid  (s_axis_video_valid),
         .reset      (reset),
         .sx         (sx         ),     // horizontal screen position
         .sy         (sy         ),     // vertical screen position
@@ -67,15 +71,10 @@ module hdmi_controller(
 /////////////////////////////////////////////////////////////////////////////////
 // 8 Colour Strip Pattern Generator Logic
 ////////////////////////////////////////////////////////////////////////////////
-    reg [7:0] red, green, blue;
-    always@(posedge clk_pix)
-    begin
-        red <= (sx >= 683) ? 8'hFF : 8'h00;
-        green <= ((sx >= 341 && sx <= 682) || (sx >= 1025)) ? 8'hFF : 8'h00;
-        blue <= ((sx >= 170 && sx <= 340) || (sx >= 512 && sx <= 682) || 
-                 (sx >= 854 && sx <= 1024) || (sx >= 1195)) ? 8'hFF : 8'h00;
-    end
-
+    wire [7:0] red, green, blue;
+    assign red = s_axis_video_data[7:0];
+    assign green = s_axis_video_data[15:8];
+    assign blue =  s_axis_video_data[23:16];
 /////////////////////////////////////////////////////////////////////////////////
 // TMDS Encoder Instntiation
 ////////////////////////////////////////////////////////////////////////////////
